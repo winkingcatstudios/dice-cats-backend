@@ -1,8 +1,11 @@
 const axios = require("axios");
+
 const HttpError = require("../models/http-error");
-const API_KEY = "YOUR_API_KEY_HERE";
+const getLocationIQApiKey = require("../dev-files/keys");
 
 const getCoordsForAddress = async (address) => {
+  const API_KEY = getLocationIQApiKey();
+
   const response = await axios.get(
     `https://us1.locationiq.com/v1/search.php?key=${API_KEY}&q=${encodeURIComponent(
       address
@@ -29,6 +32,6 @@ const getCoordsForAddress = async (address) => {
   };
 
   return coordinates;
-}
+};
 
 module.exports = getCoordsForAddress;
