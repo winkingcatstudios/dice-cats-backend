@@ -1,7 +1,7 @@
 const axios = require("axios");
 
 const HttpError = require("../models/http-error");
-const getLocationIQApiKey = require("../dev-files/keys");
+const getLocationIQApiKey = require("../dev-files/dev-files").getLocationIQApiKey;
 
 const getCoordsForAddress = async (address) => {
   const API_KEY = getLocationIQApiKey();
