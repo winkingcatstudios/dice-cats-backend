@@ -5,31 +5,6 @@ const HttpError = require("../models/http-error");
 const getCoordsForAddress = require("../util/location");
 const Place = require("../models/place");
 
-let DUMMY_PLACES = [
-  {
-    id: "p1",
-    title: "Empire State Building",
-    description: "Famous building",
-    location: {
-      lat: 40.7484474,
-      lng: -73.9871516,
-    },
-    address: "20 W 34st, New York, NY 10001",
-    creator: "u1",
-  },
-  {
-    id: "p2",
-    title: "Emp. State Building",
-    description: "Famous building",
-    location: {
-      lat: 40.7484474,
-      lng: -73.9871516,
-    },
-    address: "20 W 34st, New York, NY 10001",
-    creator: "u1",
-  },
-];
-
 const getPlacesByUserId = async (req, res, next) => {
   const userId = req.params.uid;
 
@@ -37,7 +12,7 @@ const getPlacesByUserId = async (req, res, next) => {
   try {
     places = await Place.find({ creator: userId });
   } catch (err) {
-    const error = new Error("Something went wrong, database error", 500);
+    const error = new HttpError("Something went wrong, database error", 500);
     return next(error);
   }
 
@@ -61,12 +36,12 @@ const getPlaceById = async (req, res, next) => {
   try {
     place = await Place.findById(placeId);
   } catch (err) {
-    const error = new Error("Something went wrong, database error", 500);
+    const error = new HttpError("Something went wrong, database error", 500);
     return next(error);
   }
 
   if (!place) {
-    const error = new Error("Could not find a place for the provided id", 404);
+    const error = new HttpError("Could not find a place for the provided id", 404);
     return next(error);
   }
 
@@ -113,7 +88,8 @@ const postCreatePlace = async (req, res, next) => {
 const patchUpdatePlace = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    throw new HttpError("Invalid inputs passed, please check your data", 422);
+    const error = new HttpError("Invalid inputs passed, please check your data", 422);
+    return next(error);
   }
 
   const { title, description } = req.body;
@@ -123,12 +99,12 @@ const patchUpdatePlace = async (req, res, next) => {
   try {
     place = await Place.findById(placeId);
   } catch (err) {
-    const error = new Error("Something went wrong, database error", 500);
+    const error = new HttpError("Something went wrong, database error", 500);
     return next(error);
   }
 
   if (!place) {
-    const error = new Error("Could not find a place for the provided id", 404);
+    const error = new HttpError("Could not find a place for the provided id", 404);
     return next(error);
   }
 
