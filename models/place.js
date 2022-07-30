@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+const mongoose = require("mongoose")
 
 const Schema = mongoose.Schema;
 
@@ -21,11 +21,11 @@ const placeSchema = new Schema({
   },
   location: {
     lat: {
-      type: number,
+      type: Number,
       required: true,
     },
     lng: {
-      type: number,
+      type: Number,
       required: true,
     },
   },
