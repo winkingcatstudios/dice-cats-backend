@@ -1,20 +1,25 @@
-const { v4: uuidv4 } = require("uuid");
 const { validationResult } = require("express-validator");
 
 const HttpError = require("../models/http-error");
 const User = require("../models/user");
 
-const DUMMY_USERS = [
-  {
-    id: "u1",
-    name: "wink",
-    email: "test@test.com",
-    password: "dragon",
-  },
-];
+const getUsers = async (req, res, next) => {
+  let users;
+  try {
+    users = await User.find({}, "-password");
+  } catch (err) {
+    const error = new HttpError("Something went wrong, database error", 500);
+    return next(error);
+  }
 
-const getUsers = (req, res, next) => {
-  res.json({ users: DUMMY_USERS });
+  if (!users || users.length === 0) {
+    const error = new HttpError("Could not find users", 404);
+    return next(error);
+  }
+
+  res.json({
+    users: users.map((user) => user.toObject({ getters: true })),
+  });
 };
 
 const postSignup = async (req, res, next) => {
@@ -27,7 +32,7 @@ const postSignup = async (req, res, next) => {
     return next(error);
   }
 
-  const { name, email, password, places } = req.body;
+  const { name, email, password } = req.body;
 
   let existingUser;
   try {
@@ -48,7 +53,7 @@ const postSignup = async (req, res, next) => {
     image:
       "https://whatsondisneyplus.com/wp-content/uploads/2020/12/the-Ghost-of-Christmas-Present-1024x559.jpg",
     password: password,
-    places: places,
+    places: [],
   });
 
   try {
@@ -61,13 +66,20 @@ const postSignup = async (req, res, next) => {
   res.status(201).json({ user: createdUser.toObject({ getters: true }) });
 };
 
-const postLogin = (req, res, next) => {
+const postLogin = async (req, res, next) => {
   const { email, password } = req.body;
 
-  const identifiedUser = DUMMY_USERS.find((u) => u.email === email);
+  let existingUser;
+  try {
+    existingUser = await User.findOne({ email: email });
+  } catch (err) {
+    const error = new Error("Something went wrong, database error", 500);
+    return next(error);
+  }
 
-  if (!identifiedUser || identifiedUser.password !== password) {
-    throw new HttpError("Login unsuccessful", 401);
+  if (!existingUser || existingUser.password !== password) {
+    const error = new Error("Login unsuccessful", 401);
+    return next(error);
   }
 
   res.json({ message: "Logged in" });
