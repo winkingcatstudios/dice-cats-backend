@@ -104,7 +104,7 @@ const postLogin = async (req, res, next) => {
   }
 
   if (!existingUser) {
-    const error = new HttpError("Login unsuccessful", 401);
+    const error = new HttpError("Login unsuccessful", 403);
     return next(error);
   }
 
@@ -117,7 +117,7 @@ const postLogin = async (req, res, next) => {
   }
 
   if (!isValidPassword) {
-    const error = new HttpError("Login unsuccessful", 401);
+    const error = new HttpError("Login unsuccessful", 403);
     return next(error);
   }
 

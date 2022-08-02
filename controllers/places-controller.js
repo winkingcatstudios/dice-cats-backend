@@ -142,6 +142,11 @@ const patchUpdatePlace = async (req, res, next) => {
     return next(error);
   }
 
+  if (place.creator.toString() !== req.userData.userId) {
+    const error = new HttpError("Not authorized", 401);
+    return next(error);
+  }
+
   place.title = title;
   place.description = description;
 
@@ -168,6 +173,11 @@ const deletePlace = async (req, res, next) => {
 
   if (!place) {
     const error = new HttpError("Cound not find place for this id", 404);
+    return next(error);
+  }
+
+  if (place.creator.id !== req.userData.userId) {
+    const error = new HttpError("Not authorized", 401);
     return next(error);
   }
 
