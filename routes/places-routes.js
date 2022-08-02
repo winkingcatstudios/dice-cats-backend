@@ -12,8 +12,8 @@ router.get("/user/:uid", placesController.getPlacesByUserId);
 
 router.get("/:pid", placesController.getPlaceById);
 
-// routes below this point require authentication
 router.use(checkAuth);
+// routes below this point require authentication
 
 router.post(
   "/",
