@@ -1,3 +1,5 @@
+const fs = require("fs");
+
 const { v4: uuidv4 } = require("uuid");
 const { validationResult } = require("express-validator");
 const mongoose = require("mongoose");
@@ -77,8 +79,7 @@ const postCreatePlace = async (req, res, next) => {
     description: description,
     address: address,
     location: coordinates,
-    image:
-      "https://usercontent.one/wp/kirileonard.com/wp-content/uploads/2020/07/LTL_the_drunken_whale_opt.jpg",
+    image: req.file.path,
     creator: creator,
   });
 
@@ -170,6 +171,8 @@ const deletePlace = async (req, res, next) => {
     return next(error);
   }
 
+  const imagePath = place.image;
+
   try {
     const sess = await mongoose.startSession();
     sess.startTransaction();
@@ -183,6 +186,10 @@ const deletePlace = async (req, res, next) => {
     const error = new HttpError("Deleting place failed, please try again", 500);
     return next(error);
   }
+
+  fs.unlink(imagePath, (err) => {
+    console.log(err);
+  });
 
   res.status(200).json({ message: "Deleted place" });
 };

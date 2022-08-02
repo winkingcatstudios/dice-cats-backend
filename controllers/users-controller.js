@@ -50,8 +50,7 @@ const postSignup = async (req, res, next) => {
   const createdUser = new User({
     name: name,
     email: email,
-    image:
-      "https://whatsondisneyplus.com/wp-content/uploads/2020/12/the-Ghost-of-Christmas-Present-1024x559.jpg",
+    image: req.file.path,
     password: password,
     places: [],
   });
@@ -82,7 +81,10 @@ const postLogin = async (req, res, next) => {
     return next(error);
   }
 
-  res.json({ message: "Logged in", user: existingUser.toObject({getters: true}) });
+  res.json({
+    message: "Logged in",
+    user: existingUser.toObject({ getters: true }),
+  });
 };
 
 exports.getUsers = getUsers;
